@@ -34,7 +34,7 @@ def optimize(trial,x,y):
         'eval_metric':'AUC'
     }
     
-	num_rounds=args.n_iters
+    num_rounds=args.n_iters
 	
     auc_score = []
         
@@ -44,15 +44,14 @@ def optimize(trial,x,y):
         df_train, df_val = x.iloc[train_idx], x.iloc[val_idx]
         train_target, val_target = y[train_idx], y[val_idx]
         eval_set = [(df_val, val_target)]   
-     
+	
         model = CatBoostClassifier(**params)
         model.fit(
 		    df_train, 
 		    train_target,
 		    eval_set=eval_set, 
 		    verbose=0, 
-		    early_stopping_rounds=100
-		)
+		    early_stopping_rounds=100)
         
         predicted = model.predict_proba(df_val)[:, 1]
         auc  = roc_auc_score(val_target, predicted)
@@ -78,6 +77,6 @@ if __name__=='__main__':
     optimize_func=partial(optimize,x=df, y=df['target'].values)
     study = optuna.create_study(direction='maximize')
     study.optimize(optimize_func, n_trials=args.n_trials)
-	trial = study.best_trial
+    trial = study.best_trial
     print('Score: {}'.format(trial.value))
-	print("Best hyperparameters: {}".format(trial.params))
+    print("Best hyperparameters: {}".format(trial.params))
